@@ -38,4 +38,7 @@ SOURCES = \
    src/task-manager-linux.c \
    src/task-manager.c
 
+DISTFILES += \
+    README.md
+
 

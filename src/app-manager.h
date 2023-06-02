@@ -36,6 +36,12 @@ struct _App
 #define XTM_APP_MANAGER_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS ((obj), XTM_TYPE_APP_MANAGER, XtmAppManagerClass))
 
 typedef struct _XtmAppManager XtmAppManager;
+struct _XtmAppManager
+{
+	GObject			parent;
+	/*<private>*/
+	GArray *		apps;
+};
 
 GType			xtm_app_manager_get_type			(void);
 XtmAppManager *		xtm_app_manager_new				(void);

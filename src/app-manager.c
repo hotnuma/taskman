@@ -28,12 +28,6 @@ struct _XtmAppManagerClass
 {
 	GObjectClass		parent_class;
 };
-struct _XtmAppManager
-{
-	GObject			parent;
-	/*<private>*/
-	GArray *		apps;
-};
 G_DEFINE_TYPE (XtmAppManager, xtm_app_manager, G_TYPE_OBJECT)
 
 static void	xtm_app_manager_finalize			(GObject *object);

@@ -17,6 +17,12 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#ifdef HAVE_WNCK
+#include "app-manager.h"
+#endif
+
+typedef struct _XtmTaskManager XtmTaskManager;
+
 /**
  * Task struct used as elements of a task list GArray.
  */
@@ -43,7 +49,11 @@ struct _Task
  * memory_available = free + cache + buffers + an-OS-specific-value
  */
 
-gboolean	get_memory_usage	(guint64 *memory_total, guint64 *memory_available, guint64 *memory_free, guint64 *memory_cache, guint64 *memory_buffers, guint64 *swap_total, guint64 *swap_free);
+gboolean	get_memory_usage	(XtmTaskManager *manager);
+								 /*guint64 *memory_total, guint64 *memory_available,
+								  *  guint64 *memory_free, guint64 *memory_cache,
+								  *   guint64 *memory_buffers, guint64 *swap_total,
+								  *    guint64 *swap_free); */
 gboolean	get_cpu_usage		(gushort *cpu_count, gfloat *cpu_user, gfloat *cpu_system);
 gboolean	get_task_list		(GArray *task_list);
 gboolean	pid_is_sleeping		(GPid pid);
@@ -59,7 +69,25 @@ gboolean	pid_is_sleeping		(GPid pid);
 #define XTM_IS_TASK_MANAGER_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), XTM_TYPE_TASK_MANAGER))
 #define XTM_TASK_MANAGER_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS ((obj), XTM_TYPE_TASK_MANAGER, XtmTaskManagerClass))
 
-typedef struct _XtmTaskManager XtmTaskManager;
+struct _XtmTaskManager
+{
+	GObject			parent;
+	/*<private>*/
+#ifdef HAVE_WNCK
+	XtmAppManager *		app_manager;
+#endif
+	GtkTreeModel *		model;
+	GArray *		tasks;
+	gushort			cpu_count;
+	gfloat			cpu_user;
+	gfloat			cpu_system;
+
+	guint64			memory_used;
+	guint64			memory_total;
+
+	guint64			swap_total;
+	guint64			swap_free;
+};
 
 GType			xtm_task_manager_get_type			(void);
 XtmTaskManager *	xtm_task_manager_new				(GtkTreeModel *model);

@@ -29,9 +29,6 @@
 #endif
 
 #include "task-manager.h"
-#ifdef HAVE_WNCK
-#include "app-manager.h"
-#endif
 #include "process-tree-view.h" /* for the columns of the model */
 #include "settings.h"
 
@@ -50,26 +47,6 @@ typedef struct _XtmTaskManagerClass XtmTaskManagerClass;
 struct _XtmTaskManagerClass
 {
 	GObjectClass		parent_class;
-};
-struct _XtmTaskManager
-{
-	GObject			parent;
-	/*<private>*/
-#ifdef HAVE_WNCK
-	XtmAppManager *		app_manager;
-#endif
-	GtkTreeModel *		model;
-	GArray *		tasks;
-	gushort			cpu_count;
-	gfloat			cpu_user;
-	gfloat			cpu_system;
-	guint64			memory_total;
-	guint64			memory_available; /* free + cache + buffers + an-OS-specific-value */
-	guint64			memory_free;
-	guint64			memory_cache;
-	guint64			memory_buffers;
-	guint64			swap_total;
-	guint64			swap_free;
 };
 G_DEFINE_TYPE (XtmTaskManager, xtm_task_manager, G_TYPE_OBJECT)
 
@@ -378,15 +355,15 @@ xtm_task_manager_get_system_info (XtmTaskManager *manager,
 	*num_processes = manager->tasks->len;
 
 	/* Set memory and swap usage */
-	get_memory_usage (&manager->memory_total,
+	get_memory_usage (manager /*&manager->memory_total,
 					  &manager->memory_available,
 					  &manager->memory_free,
 					  &manager->memory_cache,
 					  &manager->memory_buffers,
 					  &manager->swap_total,
-					  &manager->swap_free);
+					  &manager->swap_free*/);
 
-	*memory_used = manager->memory_total - manager->memory_available;
+	*memory_used = manager->memory_used;
 	*memory_total = manager->memory_total;
 	*swap_used = manager->swap_total - manager->swap_free;
 	*swap_total = manager->swap_total;
