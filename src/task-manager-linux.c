@@ -160,11 +160,14 @@ get_task_cmdline (Task *task)
 	/* Kernel processes don't have a cmdline nor an exec path */
 	if (i == 0)
 	{
-		size_t len = strlen (task->name);
-		g_strlcpy (&task->cmdline[1], task->name, len + 1);
-		task->cmdline[0] = '[';
-		task->cmdline[len+1] = ']';
-		task->cmdline[len+2] = '\0';
+		task->cmdline[0] = '\0';
+		return FALSE;
+
+		//size_t len = strlen (task->name);
+		//g_strlcpy (&task->cmdline[1], task->name, len + 1);
+		//task->cmdline[0] = '[';
+		//task->cmdline[len+1] = ']';
+		//task->cmdline[len+2] = '\0';
 	}
 
 	return TRUE;
