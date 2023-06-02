@@ -26,7 +26,9 @@ static gushort _cpu_count = 0;
 static gulong jiffies_total_delta = 0;
 
 gboolean
-get_memory_usage (guint64 *memory_total, guint64 *memory_available, guint64 *memory_free, guint64 *memory_cache, guint64 *memory_buffers, guint64 *swap_total, guint64 *swap_free)
+get_memory_usage (guint64 *memory_total, guint64 *memory_available,
+				  guint64 *memory_free, guint64 *memory_cache,
+				  guint64 *memory_buffers, guint64 *swap_total, guint64 *swap_free)
 {
 	FILE *file;
 	gchar *filename = "/proc/meminfo";

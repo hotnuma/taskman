@@ -366,9 +366,10 @@ xtm_task_manager_new (GtkTreeModel *model)
 }
 
 void
-xtm_task_manager_get_system_info (XtmTaskManager *manager, guint *num_processes, gfloat *cpu,
-				  guint64 *memory_used, guint64 *memory_total,
-				  guint64 *swap_used, guint64 *swap_total)
+xtm_task_manager_get_system_info (XtmTaskManager *manager,
+								  guint *num_processes, gfloat *cpu,
+								  guint64 *memory_used, guint64 *memory_total,
+								  guint64 *swap_used, guint64 *swap_total)
 
 {
 	g_return_if_fail (XTM_IS_TASK_MANAGER (manager));
@@ -377,8 +378,13 @@ xtm_task_manager_get_system_info (XtmTaskManager *manager, guint *num_processes,
 	*num_processes = manager->tasks->len;
 
 	/* Set memory and swap usage */
-	get_memory_usage (&manager->memory_total, &manager->memory_available, &manager->memory_free, &manager->memory_cache, &manager->memory_buffers,
-			&manager->swap_total, &manager->swap_free);
+	get_memory_usage (&manager->memory_total,
+					  &manager->memory_available,
+					  &manager->memory_free,
+					  &manager->memory_cache,
+					  &manager->memory_buffers,
+					  &manager->swap_total,
+					  &manager->swap_free);
 
 	*memory_used = manager->memory_total - manager->memory_available;
 	*memory_total = manager->memory_total;
