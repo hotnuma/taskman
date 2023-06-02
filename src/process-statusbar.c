@@ -139,7 +139,9 @@ xtm_process_statusbar_set_property (GObject *object, guint property_id, const GV
 		text = g_strdup_printf (_("CPU: %s%%"), float_value);
 		gtk_label_set_text (GTK_LABEL (statusbar->label_cpu), text);
 		gdk_rgba_parse (&color, "#ff6e00");
+		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 		gtk_widget_override_color (statusbar->label_cpu, GTK_STATE_FLAG_NORMAL, &color);
+		G_GNUC_END_IGNORE_DEPRECATIONS;
 		g_free (float_value);
 		g_free (text);
 		break;
@@ -150,7 +152,9 @@ xtm_process_statusbar_set_property (GObject *object, guint property_id, const GV
 		gtk_label_set_text (GTK_LABEL (statusbar->label_memory), text);
 		gtk_widget_set_tooltip_text (statusbar->label_memory, text);
 		gdk_rgba_parse (&color, "#cb386c");
+		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 		gtk_widget_override_color (statusbar->label_memory, GTK_STATE_FLAG_NORMAL, &color);
+		G_GNUC_END_IGNORE_DEPRECATIONS;
 		g_free (text);
 		break;
 
@@ -160,7 +164,9 @@ xtm_process_statusbar_set_property (GObject *object, guint property_id, const GV
 		gtk_label_set_text (GTK_LABEL (statusbar->label_swap), text);
 		gtk_widget_set_tooltip_text (statusbar->label_swap, text);
 		gdk_rgba_parse (&color, "#75324d");
+		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 		gtk_widget_override_color (statusbar->label_swap, GTK_STATE_FLAG_NORMAL, &color);
+		G_GNUC_END_IGNORE_DEPRECATIONS;
 		g_free (text);
 		break;
 

@@ -62,7 +62,9 @@ status_icon_popup_menu (GtkStatusIcon *_status_icon, guint button, guint activat
 		gtk_widget_show_all (menu);
 	}
 
+	G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, gtk_status_icon_position_menu, _status_icon, button, activate_time);
+	G_GNUC_END_IGNORE_DEPRECATIONS;
 }
 
 static void
@@ -70,7 +72,9 @@ create_status_icon (void)
 {
 	if (!status_icon_or_null)
 	{
+		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 		GtkStatusIcon *status_icon = gtk_status_icon_new_from_icon_name ("org.xfce.taskmanager");
+		G_GNUC_END_IGNORE_DEPRECATIONS;
 		g_signal_connect (status_icon, "activate", G_CALLBACK (status_icon_activated), NULL);
 		g_signal_connect (status_icon, "popup-menu", G_CALLBACK (status_icon_popup_menu), NULL);
 		status_icon_or_null = status_icon;
@@ -80,12 +84,15 @@ create_status_icon (void)
 static gboolean
 status_icon_get_visible (void)
 {
+	G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 	return status_icon_or_null && gtk_status_icon_get_visible (status_icon_or_null);
+	G_GNUC_END_IGNORE_DEPRECATIONS;
 }
 
 static void
 show_hide_status_icon (void)
 {
+	G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 	gboolean show_status_icon;
 	g_object_get (settings, "show-status-icon", &show_status_icon, NULL);
 	if (show_status_icon)
@@ -97,6 +104,7 @@ show_hide_status_icon (void)
 	{
 		gtk_status_icon_set_visible (status_icon_or_null, FALSE);
 	}
+	G_GNUC_END_IGNORE_DEPRECATIONS;
 }
 
 static void
@@ -161,7 +169,9 @@ collect_data (void)
 				"<b>Memory:</b> %s\n"
 				"<b>Swap:</b> %s"),
 				num_processes, cpu, memory_info, swap_info);
+		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
 		gtk_status_icon_set_tooltip_markup (GTK_STATUS_ICON (status_icon_or_null), tooltip);
+		G_GNUC_END_IGNORE_DEPRECATIONS;
 	}
 
 	xtm_task_manager_update_model (task_manager);
@@ -170,6 +180,8 @@ collect_data (void)
 static gboolean
 init_timeout_cb (gpointer user_data)
 {
+	(void) user_data;
+
 	collect_data ();
 	return TRUE;
 }
