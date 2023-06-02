@@ -123,7 +123,7 @@ xtm_settings_class_init (XtmSettingsClass *klass)
 static void
 xtm_settings_init (XtmSettings *settings)
 {
-
+	(void) settings;
 }
 
 static void

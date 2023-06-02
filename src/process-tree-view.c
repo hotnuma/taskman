@@ -872,6 +872,8 @@ xtm_process_tree_view_highlight_pid (XtmProcessTreeView *treeview, GPid pid) {
 static gboolean
 treeview_query_tooltip (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip, GtkTooltip *tooltip, gpointer data)
 {
+	(void) data;
+
 	GtkTreeIter iter;
 	GtkTreePath *path;
 	GtkTreeModel *model;

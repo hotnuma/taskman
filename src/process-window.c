@@ -214,6 +214,8 @@ xtm_process_window_class_init (XtmProcessWindowClass *klass)
 static void
 xtm_process_window_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
 {
+	(void) allocation;
+
 	XtmProcessWindow *window = (XtmProcessWindow *) user_data;
 
 	g_return_if_fail (gtk_widget_is_toplevel (widget));
@@ -224,6 +226,8 @@ xtm_process_window_size_allocate (GtkWidget *widget, GtkAllocation *allocation, 
 static void
 show_settings_dialog (GtkButton *button, gpointer user_data)
 {
+	(void) button;
+
 	XtmProcessWindow *window = (XtmProcessWindow *) user_data;
 
 	g_signal_handler_block (G_OBJECT (window->window), window->handler);
@@ -243,6 +247,8 @@ xtm_process_window_stick_view (GtkAdjustment *adjustment, XtmProcessWindow *wind
 static gboolean
 xtm_process_window_unstick_view_event (GtkWidget *widget, GdkEvent *event, XtmProcessWindow *window)
 {
+	(void) widget;
+
 	GdkScrollDirection dir;
 	gdouble y;
 

@@ -73,6 +73,8 @@ combobox_foreach (GtkTreeModel *model,
                                       GtkTreeIter  *iter,
                                       gpointer      user_data)
 {
+	(void) path;
+
 	XtmRefreshRate *refresh_rate = user_data;
 	GValue prop = { 0, };
 
@@ -106,6 +108,8 @@ builder_bind_combobox (GtkBuilder *builder, XtmSettings *settings)
 static void
 show_about_dialog (GtkWidget *widget, gpointer user_data)
 {
+	(void) widget;
+
 	GtkDialog *dialog = GTK_DIALOG (user_data);
 
 	const gchar *authors[] = {
@@ -155,6 +159,8 @@ show_about_dialog (GtkWidget *widget, gpointer user_data)
 static void
 show_help (GtkWidget *widget, gpointer user_data)
 {
+	(void) widget;
+
 	GtkDialog *dialog = GTK_DIALOG (user_data);
 
 	xfce_dialog_show_help_with_version (GTK_WINDOW (dialog), "xfce4-taskmanager", "start", NULL, NULL);
@@ -163,6 +169,8 @@ show_help (GtkWidget *widget, gpointer user_data)
 static void
 dialog_close (GtkWidget *widget, gpointer user_data)
 {
+	(void) widget;
+
 	GtkDialog *dialog = GTK_DIALOG (user_data);
 
 	gtk_dialog_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
