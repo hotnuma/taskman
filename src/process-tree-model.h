@@ -14,7 +14,7 @@
 #include <config.h>
 #endif
 
-#include <glib-object.h>
+#include <gtk/gtk.h>
 
 #define XTM_TYPE_PROCESS_TREE_MODEL		(xtm_process_tree_model_get_type ())
 #define XTM_PROCESS_TREE_MODEL(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), XTM_TYPE_PROCESS_TREE_MODEL, XtmProcessTreeModel))

@@ -13,7 +13,6 @@
 
 #include <glib-object.h>
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
 #include "task-manager.h"

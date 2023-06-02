@@ -14,7 +14,6 @@
 #include <config.h>
 #endif
 
-#include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>

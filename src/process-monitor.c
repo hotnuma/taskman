@@ -11,7 +11,6 @@
 #include <config.h>
 #endif
 
-#include <gtk/gtk.h>
 #include <cairo.h>
 
 #include "task-manager.h"

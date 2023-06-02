@@ -14,7 +14,6 @@
 #include <config.h>
 #endif
 
-#include <glib-object.h>
 #include <gtk/gtk.h>
 
 #define XTM_TYPE_PROCESS_STATUSBAR		(xtm_process_statusbar_get_type ())

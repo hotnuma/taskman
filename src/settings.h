@@ -14,8 +14,6 @@
 #include <config.h>
 #endif
 
-#include <glib-object.h>
-
 #include <xfconf/xfconf.h>
 
 #define DEFAULT_WINDOW_HEIGHT	600

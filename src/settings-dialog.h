@@ -14,7 +14,6 @@
 #include <config.h>
 #endif
 
-#include <glib-object.h>
 #include <gtk/gtk.h>
 
 void		xtm_settings_dialog_run				(GtkWidget *parent_window);

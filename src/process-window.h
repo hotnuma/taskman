@@ -14,9 +14,9 @@
 #include <config.h>
 #endif
 
-#include <X11/Xlib.h>
-#include <glib-object.h>
+//#include <X11/Xlib.h>
 #include <gtk/gtk.h>
+#include <xfconf/xfconf.h>
 
 #define XTM_TYPE_PROCESS_WINDOW			(xtm_process_window_get_type ())
 #define XTM_PROCESS_WINDOW(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), XTM_TYPE_PROCESS_WINDOW, XtmProcessWindow))

@@ -15,7 +15,6 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
-#include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include "process-tree-model.h"
 #include "process-tree-view.h"

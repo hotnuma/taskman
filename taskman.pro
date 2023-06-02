@@ -6,8 +6,9 @@ INCLUDEPATH = src
 PKGCONFIG =
 
 PKGCONFIG += gtk+-3.0
-PKGCONFIG += libxfce4ui-2
+PKGCONFIG += libwnck-3.0
 PKGCONFIG += libxfconf-0
+PKGCONFIG += libxfce4ui-2
 
 HEADERS = \
    src/app-manager.h \

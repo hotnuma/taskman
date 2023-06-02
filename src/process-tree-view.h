@@ -14,7 +14,7 @@
 #include <config.h>
 #endif
 
-#include <glib-object.h>
+#include <gtk/gtk.h>
 
 enum
 {
