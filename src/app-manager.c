@@ -12,186 +12,180 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <stdlib.h>
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE
 #include <libwnck/libwnck.h>
 
 #include "app-manager.h"
 #include "task-manager.h"
 
-
-
 typedef struct _XtmAppManagerClass XtmAppManagerClass;
 struct _XtmAppManagerClass
 {
-	GObjectClass		parent_class;
+    GObjectClass parent_class;
 };
-G_DEFINE_TYPE (XtmAppManager, xtm_app_manager, G_TYPE_OBJECT)
+G_DEFINE_TYPE(XtmAppManager, xtm_app_manager, G_TYPE_OBJECT)
 
-static void	xtm_app_manager_finalize			(GObject *object);
+static void xtm_app_manager_finalize(GObject *object);
 
-static GPid	app_get_pid					(WnckApplication *application);
-static gint	app_pid_compare_fn				(gconstpointer a, gconstpointer b);
+static GPid app_get_pid(WnckApplication *application);
+static gint app_pid_compare_fn(gconstpointer a, gconstpointer b);
 
-static void	apps_add_application				(GArray *apps, WnckApplication *application, GPid pid);
-static void	apps_remove_application				(GArray *apps, WnckApplication *application);
-static App *	apps_lookup_pid					(GArray *apps, GPid pid);
-static App *	apps_lookup_app					(GArray *apps, WnckApplication *application);
-static void	application_opened				(WnckScreen *screen, WnckApplication *application, XtmAppManager *manager);
-static void	application_closed				(WnckScreen *screen, WnckApplication *application, XtmAppManager *manager);
-
-
+static void apps_add_application(GArray *apps, WnckApplication *application, GPid pid);
+static void apps_remove_application(GArray *apps, WnckApplication *application);
+static App *apps_lookup_pid(GArray *apps, GPid pid);
+static App *apps_lookup_app(GArray *apps, WnckApplication *application);
+static void application_opened(WnckScreen *screen, WnckApplication *application, XtmAppManager *manager);
+static void application_closed(WnckScreen *screen, WnckApplication *application, XtmAppManager *manager);
 
 static void
-xtm_app_manager_class_init (XtmAppManagerClass *klass)
+xtm_app_manager_class_init(XtmAppManagerClass *klass)
 {
-	GObjectClass *class = G_OBJECT_CLASS (klass);
-	xtm_app_manager_parent_class = g_type_class_peek_parent (klass);
-	class->finalize = xtm_app_manager_finalize;
+    GObjectClass *class = G_OBJECT_CLASS(klass);
+    xtm_app_manager_parent_class = g_type_class_peek_parent(klass);
+    class->finalize = xtm_app_manager_finalize;
 }
 
 static void
-xtm_app_manager_init (XtmAppManager *manager)
+xtm_app_manager_init(XtmAppManager *manager)
 {
-	WnckApplication *application;
-	WnckScreen *screen = wnck_screen_get_default ();
-	GList *windows, *l;
+    WnckApplication *application;
+    WnckScreen *screen = wnck_screen_get_default();
+    GList *windows, *l;
 
-	/* Retrieve initial applications */
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
+    /* Retrieve initial applications */
+    while (gtk_events_pending())
+        gtk_main_iteration();
 
-	manager->apps = g_array_new (FALSE, FALSE, sizeof (App));
-	windows = wnck_screen_get_windows (screen);
-	for (l = windows; l != NULL; l = l->next)
-	{
-		WnckWindow *window = WNCK_WINDOW (l->data);
-		if (wnck_window_get_window_type (window) != WNCK_WINDOW_NORMAL)
-			continue;
+    manager->apps = g_array_new(FALSE, FALSE, sizeof(App));
+    windows = wnck_screen_get_windows(screen);
+    for (l = windows; l != NULL; l = l->next)
+    {
+        WnckWindow *window = WNCK_WINDOW(l->data);
+        if (wnck_window_get_window_type(window) != WNCK_WINDOW_NORMAL)
+            continue;
 
-		application = wnck_window_get_application (window);
-		apps_add_application (manager->apps, application, app_get_pid (application));
-	}
+        application = wnck_window_get_application(window);
+        apps_add_application(manager->apps, application, app_get_pid(application));
+    }
 
-	G_DEBUG_FMT ("Initial applications: %d", manager->apps->len);
+    G_DEBUG_FMT("Initial applications: %d", manager->apps->len);
 
-	/* Connect signals */
-	g_signal_connect (screen, "application-opened", G_CALLBACK (application_opened), manager);
-	g_signal_connect (screen, "application-closed", G_CALLBACK (application_closed), manager);
+    /* Connect signals */
+    g_signal_connect(screen, "application-opened", G_CALLBACK(application_opened), manager);
+    g_signal_connect(screen, "application-closed", G_CALLBACK(application_closed), manager);
 }
 
 static void
-xtm_app_manager_finalize (GObject *object)
+xtm_app_manager_finalize(GObject *object)
 {
-	g_array_free (XTM_APP_MANAGER (object)->apps, TRUE);
+    g_array_free(XTM_APP_MANAGER(object)->apps, TRUE);
 }
 
 static GPid
 app_get_pid(WnckApplication *application)
 {
-	GPid pid;
-	GList *windows;
+    GPid pid;
+    GList *windows;
 
-	if (NULL == application)
-		return (0);
-	pid = wnck_application_get_pid (application);
-	if (pid != 0)
-		return (pid);
-	windows = wnck_application_get_windows (application);
-	if (NULL != windows && NULL != windows->data)
-		return (wnck_window_get_pid (WNCK_WINDOW (windows->data)));
-	return (0);
+    if (NULL == application)
+        return (0);
+    pid = wnck_application_get_pid(application);
+    if (pid != 0)
+        return (pid);
+    windows = wnck_application_get_windows(application);
+    if (NULL != windows && NULL != windows->data)
+        return (wnck_window_get_pid(WNCK_WINDOW(windows->data)));
+    return (0);
 }
 
 static gint
 app_pid_compare_fn(gconstpointer a, gconstpointer b)
 {
-	return (((const App*)a)->pid - ((const App*)b)->pid);
+    return (((const App *)a)->pid - ((const App *)b)->pid);
 }
 
 static void
-apps_add_application (GArray *apps, WnckApplication *application, GPid pid)
+apps_add_application(GArray *apps, WnckApplication *application, GPid pid)
 {
-	App app;
+    App app;
 
-	if (apps_lookup_pid (apps, pid))
-		return;
+    if (apps_lookup_pid(apps, pid))
+        return;
 
-	app.application = application;
-	app.pid = pid;
-	g_snprintf (app.name, sizeof(app.name), "%s", wnck_application_get_name (application));
-	app.icon = wnck_application_get_mini_icon (application);
-	g_object_ref (app.icon);
+    app.application = application;
+    app.pid = pid;
+    g_snprintf(app.name, sizeof(app.name), "%s", wnck_application_get_name(application));
+    app.icon = wnck_application_get_mini_icon(application);
+    g_object_ref(app.icon);
 
-	g_array_append_val (apps, app);
-	g_array_sort (apps, app_pid_compare_fn);
+    g_array_append_val(apps, app);
+    g_array_sort(apps, app_pid_compare_fn);
 }
 
 static void
-apps_remove_application (GArray *apps, WnckApplication *application)
+apps_remove_application(GArray *apps, WnckApplication *application)
 {
-	App *app = apps_lookup_pid(apps, app_get_pid (application));
+    App *app = apps_lookup_pid(apps, app_get_pid(application));
 
-	if (app == NULL)
-		app = apps_lookup_app(apps, application);
-	if (app == NULL)
-		return;
-	g_object_unref (app->icon);
-	g_array_remove_index (apps, (guint)(((size_t)app - (size_t)apps->data) / sizeof(App)));
+    if (app == NULL)
+        app = apps_lookup_app(apps, application);
+    if (app == NULL)
+        return;
+    g_object_unref(app->icon);
+    g_array_remove_index(apps, (guint)(((size_t)app - (size_t)apps->data) / sizeof(App)));
 }
 
 static App *
-apps_lookup_pid (GArray *apps, GPid pid)
+apps_lookup_pid(GArray *apps, GPid pid)
 {
-	App tapp;
+    App tapp;
 
-	tapp.pid = pid;
+    tapp.pid = pid;
 
-	return (bsearch(&tapp, apps->data, apps->len, sizeof(App), app_pid_compare_fn));
+    return (bsearch(&tapp, apps->data, apps->len, sizeof(App), app_pid_compare_fn));
 }
 
 static App *
-apps_lookup_app (GArray *apps, WnckApplication *application)
+apps_lookup_app(GArray *apps, WnckApplication *application)
 {
-	App *tapp;
-	guint i;
+    App *tapp;
+    guint i;
 
-	for (i = 0; i < apps->len; i++) {
-		tapp = &g_array_index (apps, App, i);
-		if (tapp->application == application)
-			return (tapp);
-	}
+    for (i = 0; i < apps->len; i++)
+    {
+        tapp = &g_array_index(apps, App, i);
+        if (tapp->application == application)
+            return (tapp);
+    }
 
-	return (NULL);
+    return (NULL);
 }
 
 static void
-application_opened (WnckScreen *screen __unused, WnckApplication *application, XtmAppManager *manager)
+application_opened(WnckScreen *screen __unused, WnckApplication *application, XtmAppManager *manager)
 {
-	GPid pid = app_get_pid (application);
-	G_DEBUG_FMT ("Application opened %p %d", (void*)application, pid);
-	apps_add_application (manager->apps, application, pid);
+    GPid pid = app_get_pid(application);
+    G_DEBUG_FMT("Application opened %p %d", (void *)application, pid);
+    apps_add_application(manager->apps, application, pid);
 }
 
 static void
-application_closed (WnckScreen *screen __unused, WnckApplication *application, XtmAppManager *manager)
+application_closed(WnckScreen *screen __unused, WnckApplication *application, XtmAppManager *manager)
 {
-	G_DEBUG_FMT ("Application closed %p", (void*)application);
-	apps_remove_application (manager->apps, application);
+    G_DEBUG_FMT("Application closed %p", (void *)application);
+    apps_remove_application(manager->apps, application);
 }
-
-
 
 XtmAppManager *
-xtm_app_manager_new (void)
+xtm_app_manager_new(void)
 {
-	return g_object_new (XTM_TYPE_APP_MANAGER, NULL);
+    return g_object_new(XTM_TYPE_APP_MANAGER, NULL);
 }
 
-App *
-xtm_app_manager_get_app_from_pid (XtmAppManager *manager, GPid pid)
+App *xtm_app_manager_get_app_from_pid(XtmAppManager *manager, GPid pid)
 {
-	return apps_lookup_pid (manager->apps, pid);
+    return apps_lookup_pid(manager->apps, pid);
 }

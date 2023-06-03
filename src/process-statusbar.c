@@ -18,182 +18,176 @@
 #include "process-statusbar.h"
 #include "settings.h"
 
-
-
 enum
 {
-	PROP_CPU = 1,
-	PROP_MEMORY,
-	PROP_SWAP,
-	PROP_SHOW_SWAP,
-	PROP_NUM_PROCESSES,
+    PROP_CPU = 1,
+    PROP_MEMORY,
+    PROP_SWAP,
+    PROP_SHOW_SWAP,
+    PROP_NUM_PROCESSES,
 };
 typedef struct _XtmProcessStatusbarClass XtmProcessStatusbarClass;
 struct _XtmProcessStatusbarClass
 {
-	GtkStatusbarClass	parent_class;
+    GtkStatusbarClass parent_class;
 };
 struct _XtmProcessStatusbar
 {
-	GtkHBox			parent;
-	/*<private>*/
-	XtmSettings *		settings;
+    GtkHBox parent;
+    /*<private>*/
+    XtmSettings *settings;
 
-	GtkWidget *		label_num_processes;
-	GtkWidget *		label_cpu;
-	GtkWidget *		label_memory;
-	GtkWidget *		label_swap;
+    GtkWidget *label_num_processes;
+    GtkWidget *label_cpu;
+    GtkWidget *label_memory;
+    GtkWidget *label_swap;
 
-	gfloat			cpu;
-	gchar			memory[64];
-	gchar			swap[64];
-	guint			num_processes;
+    gfloat cpu;
+    gchar memory[64];
+    gchar swap[64];
+    guint num_processes;
 };
-G_DEFINE_TYPE (XtmProcessStatusbar, xtm_process_statusbar, GTK_TYPE_BOX)
+G_DEFINE_TYPE(XtmProcessStatusbar, xtm_process_statusbar, GTK_TYPE_BOX)
 
-static void	xtm_process_statusbar_finalize			(GObject *object);
-static void	xtm_process_statusbar_set_property		(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
-
-
+static void xtm_process_statusbar_finalize(GObject *object);
+static void xtm_process_statusbar_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 static void
-xtm_process_statusbar_class_init (XtmProcessStatusbarClass *klass)
+xtm_process_statusbar_class_init(XtmProcessStatusbarClass *klass)
 {
-	GObjectClass *class = G_OBJECT_CLASS (klass);
-	xtm_process_statusbar_parent_class = g_type_class_peek_parent (klass);
-	class->finalize = xtm_process_statusbar_finalize;
-	class->set_property = xtm_process_statusbar_set_property;
-	g_object_class_install_property (class, PROP_CPU,
-		g_param_spec_float ("cpu", "CPU", "CPU usage", 0, 100, 0, G_PARAM_CONSTRUCT|G_PARAM_WRITABLE));
-	g_object_class_install_property (class, PROP_MEMORY,
-		g_param_spec_string ("memory", "Memory", "Memory usage", "", G_PARAM_CONSTRUCT|G_PARAM_WRITABLE));
-	g_object_class_install_property (class, PROP_SWAP,
-		g_param_spec_string ("swap", "Swap", "Swap usage", "", G_PARAM_CONSTRUCT|G_PARAM_WRITABLE));
-	g_object_class_install_property (class, PROP_SHOW_SWAP,
-		g_param_spec_boolean ("show-swap", "ShowSwap", "Show or hide swap usage", TRUE, G_PARAM_WRITABLE));
-	g_object_class_install_property (class, PROP_NUM_PROCESSES,
-		g_param_spec_uint ("num-processes", "NumProcesses", "Number of processes", 0, G_MAXUINT, 0, G_PARAM_CONSTRUCT|G_PARAM_WRITABLE));
+    GObjectClass *class = G_OBJECT_CLASS(klass);
+    xtm_process_statusbar_parent_class = g_type_class_peek_parent(klass);
+    class->finalize = xtm_process_statusbar_finalize;
+    class->set_property = xtm_process_statusbar_set_property;
+    g_object_class_install_property(class, PROP_CPU,
+                                    g_param_spec_float("cpu", "CPU", "CPU usage", 0, 100, 0, G_PARAM_CONSTRUCT | G_PARAM_WRITABLE));
+    g_object_class_install_property(class, PROP_MEMORY,
+                                    g_param_spec_string("memory", "Memory", "Memory usage", "", G_PARAM_CONSTRUCT | G_PARAM_WRITABLE));
+    g_object_class_install_property(class, PROP_SWAP,
+                                    g_param_spec_string("swap", "Swap", "Swap usage", "", G_PARAM_CONSTRUCT | G_PARAM_WRITABLE));
+    g_object_class_install_property(class, PROP_SHOW_SWAP,
+                                    g_param_spec_boolean("show-swap", "ShowSwap", "Show or hide swap usage", TRUE, G_PARAM_WRITABLE));
+    g_object_class_install_property(class, PROP_NUM_PROCESSES,
+                                    g_param_spec_uint("num-processes", "NumProcesses", "Number of processes", 0, G_MAXUINT, 0, G_PARAM_CONSTRUCT | G_PARAM_WRITABLE));
 }
 
 static void
-xtm_process_statusbar_init (XtmProcessStatusbar *statusbar)
+xtm_process_statusbar_init(XtmProcessStatusbar *statusbar)
 {
-	GtkWidget *hbox, *hbox_cpu, *hbox_mem;
-	statusbar->settings = xtm_settings_get_default ();
+    GtkWidget *hbox, *hbox_cpu, *hbox_mem;
+    statusbar->settings = xtm_settings_get_default();
 
-	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 16);
-	hbox_cpu = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 16);
-	hbox_mem = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 16);
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 16);
+    hbox_cpu = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 16);
+    hbox_mem = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 16);
 
-	statusbar->label_cpu = gtk_label_new (NULL);
-	gtk_box_pack_start (GTK_BOX (hbox_cpu), statusbar->label_cpu, TRUE, FALSE, 0);
+    statusbar->label_cpu = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(hbox_cpu), statusbar->label_cpu, TRUE, FALSE, 0);
 
-	statusbar->label_num_processes = gtk_label_new (NULL);
-	gtk_box_pack_start (GTK_BOX (hbox_cpu), statusbar->label_num_processes, TRUE, FALSE, 0);
+    statusbar->label_num_processes = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(hbox_cpu), statusbar->label_num_processes, TRUE, FALSE, 0);
 
-	statusbar->label_memory = gtk_label_new (NULL);
-	gtk_label_set_ellipsize (GTK_LABEL (statusbar->label_memory), PANGO_ELLIPSIZE_END);
-	gtk_box_pack_start (GTK_BOX (hbox_mem), statusbar->label_memory, TRUE, FALSE, 0);
+    statusbar->label_memory = gtk_label_new(NULL);
+    gtk_label_set_ellipsize(GTK_LABEL(statusbar->label_memory), PANGO_ELLIPSIZE_END);
+    gtk_box_pack_start(GTK_BOX(hbox_mem), statusbar->label_memory, TRUE, FALSE, 0);
 
-	statusbar->label_swap = gtk_label_new (NULL);
-	gtk_label_set_ellipsize (GTK_LABEL (statusbar->label_swap), PANGO_ELLIPSIZE_END);
-	gtk_box_pack_start (GTK_BOX (hbox_mem), statusbar->label_swap, TRUE, FALSE, 0);
+    statusbar->label_swap = gtk_label_new(NULL);
+    gtk_label_set_ellipsize(GTK_LABEL(statusbar->label_swap), PANGO_ELLIPSIZE_END);
+    gtk_box_pack_start(GTK_BOX(hbox_mem), statusbar->label_swap, TRUE, FALSE, 0);
 
-	gtk_box_pack_start (GTK_BOX (hbox), hbox_cpu, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), hbox_mem, TRUE, TRUE, 0);
-	gtk_box_set_homogeneous (GTK_BOX (hbox), TRUE);
+    gtk_box_pack_start(GTK_BOX(hbox), hbox_cpu, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), hbox_mem, TRUE, TRUE, 0);
+    gtk_box_set_homogeneous(GTK_BOX(hbox), TRUE);
 
-	gtk_box_pack_start (GTK_BOX (statusbar), hbox, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(statusbar), hbox, TRUE, TRUE, 0);
 
-	gtk_widget_show_all (hbox);
+    gtk_widget_show_all(hbox);
 }
 
 static void
-xtm_process_statusbar_finalize (GObject *object)
+xtm_process_statusbar_finalize(GObject *object)
 {
-	g_object_unref (XTM_PROCESS_STATUSBAR (object)->settings);
-	G_OBJECT_CLASS (xtm_process_statusbar_parent_class)->finalize (object);
+    g_object_unref(XTM_PROCESS_STATUSBAR(object)->settings);
+    G_OBJECT_CLASS(xtm_process_statusbar_parent_class)->finalize(object);
 }
 
 static gchar *
-rounded_float_value (gfloat value, XtmSettings *settings)
+rounded_float_value(gfloat value, XtmSettings *settings)
 {
-	gboolean precision;
-	g_object_get (settings, "more-precision", &precision, NULL);
-	return g_strdup_printf ((precision) ? "%.2f" : "%.0f", value);
+    gboolean precision;
+    g_object_get(settings, "more-precision", &precision, NULL);
+    return g_strdup_printf((precision) ? "%.2f" : "%.0f", value);
 }
 
 static void
-xtm_process_statusbar_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+xtm_process_statusbar_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-	XtmProcessStatusbar *statusbar = XTM_PROCESS_STATUSBAR (object);
-	gchar *text;
-	gchar *float_value;
-	GdkRGBA color;
+    XtmProcessStatusbar *statusbar = XTM_PROCESS_STATUSBAR(object);
+    gchar *text;
+    gchar *float_value;
+    GdkRGBA color;
 
-	switch (property_id)
-	{
-		case PROP_CPU:
-		statusbar->cpu = g_value_get_float (value);
-		float_value = rounded_float_value (statusbar->cpu, statusbar->settings);
-		text = g_strdup_printf (_("CPU: %s%%"), float_value);
-		gtk_label_set_text (GTK_LABEL (statusbar->label_cpu), text);
-		gdk_rgba_parse (&color, "#ff6e00");
-		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
-		gtk_widget_override_color (statusbar->label_cpu, GTK_STATE_FLAG_NORMAL, &color);
-		G_GNUC_END_IGNORE_DEPRECATIONS;
-		g_free (float_value);
-		g_free (text);
-		break;
+    switch (property_id)
+    {
+    case PROP_CPU:
+        statusbar->cpu = g_value_get_float(value);
+        float_value = rounded_float_value(statusbar->cpu, statusbar->settings);
+        text = g_strdup_printf(_("CPU: %s%%"), float_value);
+        gtk_label_set_text(GTK_LABEL(statusbar->label_cpu), text);
+        gdk_rgba_parse(&color, "#ff6e00");
+        G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
+        gtk_widget_override_color(statusbar->label_cpu, GTK_STATE_FLAG_NORMAL, &color);
+        G_GNUC_END_IGNORE_DEPRECATIONS;
+        g_free(float_value);
+        g_free(text);
+        break;
 
-		case PROP_MEMORY:
-		g_strlcpy(statusbar->memory, g_value_get_string (value), sizeof(statusbar->memory));
-		text = g_strdup_printf (_("Memory: %s"), statusbar->memory);
-		gtk_label_set_text (GTK_LABEL (statusbar->label_memory), text);
-		gtk_widget_set_tooltip_text (statusbar->label_memory, text);
-		gdk_rgba_parse (&color, "#cb386c");
-		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
-		gtk_widget_override_color (statusbar->label_memory, GTK_STATE_FLAG_NORMAL, &color);
-		G_GNUC_END_IGNORE_DEPRECATIONS;
-		g_free (text);
-		break;
+    case PROP_MEMORY:
+        g_strlcpy(statusbar->memory, g_value_get_string(value), sizeof(statusbar->memory));
+        text = g_strdup_printf(_("Memory: %s"), statusbar->memory);
+        gtk_label_set_text(GTK_LABEL(statusbar->label_memory), text);
+        gtk_widget_set_tooltip_text(statusbar->label_memory, text);
+        gdk_rgba_parse(&color, "#cb386c");
+        G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
+        gtk_widget_override_color(statusbar->label_memory, GTK_STATE_FLAG_NORMAL, &color);
+        G_GNUC_END_IGNORE_DEPRECATIONS;
+        g_free(text);
+        break;
 
-		case PROP_SWAP:
-		g_strlcpy(statusbar->swap, g_value_get_string (value), sizeof(statusbar->swap));
-		text = g_strdup_printf (_("Swap: %s"), statusbar->swap);
-		gtk_label_set_text (GTK_LABEL (statusbar->label_swap), text);
-		gtk_widget_set_tooltip_text (statusbar->label_swap, text);
-		gdk_rgba_parse (&color, "#75324d");
-		G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
-		gtk_widget_override_color (statusbar->label_swap, GTK_STATE_FLAG_NORMAL, &color);
-		G_GNUC_END_IGNORE_DEPRECATIONS;
-		g_free (text);
-		break;
+    case PROP_SWAP:
+        g_strlcpy(statusbar->swap, g_value_get_string(value), sizeof(statusbar->swap));
+        text = g_strdup_printf(_("Swap: %s"), statusbar->swap);
+        gtk_label_set_text(GTK_LABEL(statusbar->label_swap), text);
+        gtk_widget_set_tooltip_text(statusbar->label_swap, text);
+        gdk_rgba_parse(&color, "#75324d");
+        G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
+        gtk_widget_override_color(statusbar->label_swap, GTK_STATE_FLAG_NORMAL, &color);
+        G_GNUC_END_IGNORE_DEPRECATIONS;
+        g_free(text);
+        break;
 
-		case PROP_SHOW_SWAP:
-		if (g_value_get_boolean (value))
-			gtk_widget_show (statusbar->label_swap);
-		else
-			gtk_widget_hide (statusbar->label_swap);
-		break;
+    case PROP_SHOW_SWAP:
+        if (g_value_get_boolean(value))
+            gtk_widget_show(statusbar->label_swap);
+        else
+            gtk_widget_hide(statusbar->label_swap);
+        break;
 
-		case PROP_NUM_PROCESSES:
-		statusbar->num_processes = g_value_get_uint (value);
-		text = g_strdup_printf (_("Processes: %d"), statusbar->num_processes);
-		gtk_label_set_text (GTK_LABEL (statusbar->label_num_processes), text);
-		g_free (text);
-		break;
+    case PROP_NUM_PROCESSES:
+        statusbar->num_processes = g_value_get_uint(value);
+        text = g_strdup_printf(_("Processes: %d"), statusbar->num_processes);
+        gtk_label_set_text(GTK_LABEL(statusbar->label_num_processes), text);
+        g_free(text);
+        break;
 
-		default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-		break;
-	}
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+        break;
+    }
 }
 
-
-
 GtkWidget *
-xtm_process_statusbar_new (void)
+xtm_process_statusbar_new(void)
 {
-	return g_object_new (XTM_TYPE_PROCESS_STATUSBAR, NULL);
+    return g_object_new(XTM_TYPE_PROCESS_STATUSBAR, NULL);
 }

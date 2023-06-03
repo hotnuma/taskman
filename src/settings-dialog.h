@@ -16,6 +16,6 @@
 
 #include <gtk/gtk.h>
 
-void		xtm_settings_dialog_run				(GtkWidget *parent_window);
+void xtm_settings_dialog_run(GtkWidget *parent_window);
 
 #endif /* !SETTINGS_DIALOG_H */
