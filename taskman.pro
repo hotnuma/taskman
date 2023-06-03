@@ -7,6 +7,7 @@ PKGCONFIG =
 
 PKGCONFIG += gtk+-3.0
 PKGCONFIG += libwnck-3.0
+PKGCONFIG += xmu
 PKGCONFIG += libxfconf-0
 PKGCONFIG += libxfce4ui-2
 
