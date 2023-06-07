@@ -265,13 +265,14 @@ xtm_process_tree_view_finalize(GObject *object)
 static void
 column_task_pack_cells(XtmProcessTreeView *treeview, GtkTreeViewColumn *column)
 {
-    GtkCellRenderer *cell_cmdline, *cell_icon;
+    GtkCellRenderer *cell_cmdline;
     gboolean show_application_icons;
 
     g_object_get(treeview->settings, "show-application-icons", &show_application_icons, NULL);
     if (show_application_icons)
     {
 #ifdef HAVE_WNCK
+        GtkCellRenderer *cell_icon;
         cell_icon = gtk_cell_renderer_pixbuf_new();
         gtk_tree_view_column_pack_start(GTK_TREE_VIEW_COLUMN(column), cell_icon, FALSE);
         gtk_tree_view_column_set_attributes(GTK_TREE_VIEW_COLUMN(column), cell_icon, "pixbuf", XTM_PTV_COLUMN_ICON, "cell-background", XTM_PTV_COLUMN_BACKGROUND, NULL);
@@ -548,6 +549,8 @@ build_context_menu(XtmProcessTreeView *treeview, GPid pid)
 static GtkWidget *
 create_popup_menu(XtmProcessTreeView *treeview, GPid pid, guint activate_time)
 {
+    (void) activate_time;
+
     static GtkWidget *menu = NULL;
 
     if (menu != NULL)

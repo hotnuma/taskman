@@ -41,6 +41,14 @@ SOURCES = \
    src/task-manager.c
 
 DISTFILES += \
-    README.md
+    README.md \
+    data/icons/meson.build \
+    data/meson.build \
+    data/xfce4-taskmanager.desktop.in \
+    install.sh \
+    meson.build \
+    po/LINGUAS \
+    po/meson.build \
+    src/meson.build
 
 
