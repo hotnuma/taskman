@@ -42,11 +42,13 @@ SOURCES = \
 
 DISTFILES += \
     README.md \
+    config.h.in \
     data/icons/meson.build \
     data/meson.build \
     data/xfce4-taskmanager.desktop.in \
     install.sh \
     meson.build \
+    meson_options.txt \
     po/LINGUAS \
     po/meson.build \
     src/meson.build

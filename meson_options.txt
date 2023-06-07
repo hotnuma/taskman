@@ -1,0 +1,9 @@
+
+option(
+    'libwnck',
+    type: 'boolean',
+    value: true,
+    description: 'Build with libwnck',
+)
+
+

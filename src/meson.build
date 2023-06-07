@@ -1,33 +1,36 @@
-app_inc = include_directories('.')
+
+#app_inc = include_directories('.')
 
 xdt_csource = find_program('xdt-csource')
 
-window_ui_h = custom_target('process_window_ui',
-                        input : ['process-window.ui'],
-                        output : ['process-window_ui.h'],
-                        command : [xdt_csource,
-                                   '--static',
-                                   '--strip-comments',
-                                   '--strip-content',
-                                   '--name=process_window_ui',
-                                   '@INPUT@',
-                                   '--output=@OUTPUT@']
+window_ui_h = custom_target(
+    'process_window_ui',
+    input : ['process-window.ui'],
+    output : ['process-window_ui.h'],
+    command : [xdt_csource,
+               '--static',
+               '--strip-comments',
+               '--strip-content',
+               '--name=process_window_ui',
+               '@INPUT@',
+               '--output=@OUTPUT@']
 )
 
-settings_dialog_h = custom_target('settings_dialog_ui',
-                        input : ['settings-dialog.ui'],
-                        output : ['settings-dialog_ui.h'],
-                        command : [xdt_csource,
-                                   '--static',
-                                   '--strip-comments',
-                                   '--strip-content',
-                                   '--name=settings_dialog_ui',
-                                   '@INPUT@',
-                                   '--output=@OUTPUT@']
+settings_dialog_h = custom_target(
+    'settings_dialog_ui',
+    input : ['settings-dialog.ui'],
+    output : ['settings-dialog_ui.h'],
+    command : [xdt_csource,
+               '--static',
+               '--strip-comments',
+               '--strip-content',
+               '--name=settings_dialog_ui',
+               '@INPUT@',
+               '--output=@OUTPUT@']
 )
 
 app_src = [
-    'app-manager.c',
+    #'app-manager.c',
     'main.c',
     'process-monitor.c',
     'process-statusbar.c',
@@ -42,10 +45,9 @@ app_src = [
     settings_dialog_h,
 ]
 
-#process-window_ui.h: process-window.ui
-#	$(AM_V_GEN) xdt-csource --static --strip-comments --strip-content --name=process_window_ui $< >$@
-#settings-dialog_ui.h: settings-dialog.ui
-#	$(AM_V_GEN) xdt-csource --static --strip-comments --strip-content --name=settings_dialog_ui $< >$@
+if get_option('libwnck')
+    app_src += 'app-manager.c'
+endif
 
 app = executable(
     meson.project_name(),
