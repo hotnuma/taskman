@@ -9,9 +9,6 @@
 /* always defined to indicate that i18n is enabled */
 #mesondefine ENABLE_NLS
 
-/*  */
-#mesondefine PACKAGE_LOCALE_DIR
-
 /* Name of default gettext domain */
 #mesondefine GETTEXT_PACKAGE
 
@@ -139,6 +136,9 @@
 
 /* Define to the address where bug reports for this package should be sent. */
 #mesondefine PACKAGE_BUGREPORT
+
+/* Package locale directory */
+#mesondefine PACKAGE_LOCALE_DIR
 
 /* Define to the full name of this package. */
 #mesondefine PACKAGE_NAME
