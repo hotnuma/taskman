@@ -8,7 +8,9 @@ project('xfce4-taskmanager',
     ],
 )
 
+host_system = host_machine.system()
 cc = meson.get_compiler('c')
+xdt_csource = find_program('xdt-csource')
 prefix = get_option('prefix')
 datadir = get_option('datadir')
 gnome = import('gnome')
@@ -121,7 +123,7 @@ configure_file(
 
 # process subdirs -------------------------------------------------------------
 
-app_include_dirs = include_directories('.')
+app_inc = include_directories('.')
 
 subdir('po')
 subdir('data')

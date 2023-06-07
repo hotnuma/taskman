@@ -1,7 +1,5 @@
 
-#app_inc = include_directories('.')
-
-xdt_csource = find_program('xdt-csource')
+# generate UI headers ---------------------------------------------------------
 
 window_ui_h = custom_target(
     'process_window_ui',
@@ -29,8 +27,9 @@ settings_dialog_h = custom_target(
                '--output=@OUTPUT@']
 )
 
+# build application -----------------------------------------------------------
+
 app_src = [
-    #'app-manager.c',
     'main.c',
     'process-monitor.c',
     'process-statusbar.c',
@@ -39,21 +38,24 @@ app_src = [
     'process-window.c',
     'settings-dialog.c',
     'settings.c',
-    'task-manager-linux.c',
     'task-manager.c',
     window_ui_h,
     settings_dialog_h,
 ]
 
+if host_system == 'linux'
+    app_src += 'task-manager-linux.c'
+endif
+
 if get_option('libwnck')
     app_src += 'app-manager.c'
 endif
 
-app = executable(
+executable(
     meson.project_name(),
     c_args: c_args,
     sources: app_src,
-    include_directories: app_include_dirs,
+    include_directories: app_inc,
     dependencies: app_deps,
     install: true
 )
