@@ -1,4 +1,5 @@
-project('xfce4-taskmanager',
+project(
+    'xfce4-taskmanager',
     ['c'],
     meson_version: '>= 0.43.0',
     version: '1.5.5git-67c43c0',
