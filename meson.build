@@ -95,19 +95,30 @@ foreach h : check_headers
     endif
 endforeach
 
+# check symbol ----------------------------------------------------------------
+
+check_symbol = [
+    ['HAVE_LC_MESSAGES', 'locale.h', 'LC_MESSAGES'],
+]
+
+foreach s : check_symbol
+    if cc.has_header_symbol(s.get(1), s.get(2))
+        cdata.set(s.get(0), 1)
+    endif
+endforeach
+
 # check functions -------------------------------------------------------------
+
+# check token ['HAVE_CFLOCALECOPYCURRENT']
+# check token ['HAVE_CFPREFERENCESCOPYAPPVALUE']
+# check token ['HAVE_LIBKSTAT']
+# check token ['HAVE_LIBKVM']
+# check token ['HAVE_LIBX11']
 
 check_functions = [
     ['HAVE_BIND_TEXTDOMAIN_CODESET', 'bind_textdomain_codeset', '#include<libintl.h>'],
     ['HAVE_DCGETTEXT', 'dcgettext', '#include<libintl.h>'],
     ['HAVE_GETTEXT', 'gettext', '#include<libintl.h>'],
-    # check token ['HAVE_CFLOCALECOPYCURRENT']
-    # check token ['HAVE_CFPREFERENCESCOPYAPPVALUE']
-    # check token ['HAVE_LC_MESSAGES']
-    # check token ['HAVE_LIBKSTAT']
-    # check token ['HAVE_LIBKVM']
-    # check token ['HAVE_LIBX11']
-    # check token ['HAVE_WNCK']
 ]
 
 foreach f : check_functions
