@@ -1,12 +1,10 @@
 project(
     'xfce4-taskmanager',
     ['c'],
+    default_options: ['c_std=c99'],
+    license: 'GPL-2.0',
     meson_version: '>= 0.43.0',
     version: '1.5.5git-67c43c0',
-    license: 'GPL-2.0',
-    default_options : [
-        'c_std=c99',
-    ],
 )
 
 host_system = host_machine.system()
@@ -46,6 +44,10 @@ cdata.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 cdata.set_quoted('PACKAGE', meson.project_name())
 cdata.set_quoted('PACKAGE_BUGREPORT', 'https://gitlab.xfce.org/apps/xfce4-taskmanager/')
 cdata.set_quoted('PACKAGE_LOCALE_DIR', join_paths(prefix, datadir, 'locale'))
+cdata.set_quoted('PACKAGE_NAME', 'Xfce4 Taskmanager')
+cdata.set_quoted('PACKAGE_STRING', 'Xfce4 Taskmanager ' + meson.project_version())
+cdata.set_quoted('PACKAGE_TARNAME', meson.project_name())
+cdata.set_quoted('PACKAGE_URL', 'https://docs.xfce.org/apps/xfce4-taskmanager/start')
 cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 cdata.set_quoted('VERSION', meson.project_version())
 
@@ -96,11 +98,11 @@ endforeach
 # check functions -------------------------------------------------------------
 
 check_functions = [
-    # ['HAVE_BIND_TEXTDOMAIN_CODESET'],
+    ['HAVE_BIND_TEXTDOMAIN_CODESET', 'bind_textdomain_codeset', '#include<libintl.h>'],
+    ['HAVE_DCGETTEXT', 'dcgettext', '#include<libintl.h>'],
+    ['HAVE_GETTEXT', 'gettext', '#include<libintl.h>'],
     # check token ['HAVE_CFLOCALECOPYCURRENT']
     # check token ['HAVE_CFPREFERENCESCOPYAPPVALUE']
-    ['HAVE_DCGETTEXT', 'dcgettext', '#include<libintl.h>'],
-    # check token ['HAVE_GETTEXT']
     # check token ['HAVE_LC_MESSAGES']
     # check token ['HAVE_LIBKSTAT']
     # check token ['HAVE_LIBKVM']
