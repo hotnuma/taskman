@@ -12,6 +12,7 @@ cc = meson.get_compiler('c')
 xdt_csource = find_program('xdt-csource')
 prefix = get_option('prefix')
 datadir = get_option('datadir')
+libwnck = get_option('libwnck')
 gnome = import('gnome')
 i18n = import('i18n')
 glib_ver = '>= 2.32'
@@ -39,91 +40,26 @@ app_deps = [
 # config.h --------------------------------------------------------------------
 
 cdata = configuration_data()
-cdata.set('ENABLE_NLS', 1)
+cdata.set('DEBUG', 0)
 cdata.set_quoted('GETTEXT_PACKAGE', meson.project_name())
-cdata.set_quoted('PACKAGE', meson.project_name())
-cdata.set_quoted('PACKAGE_BUGREPORT', 'https://gitlab.xfce.org/apps/xfce4-taskmanager/')
-cdata.set_quoted('PACKAGE_LOCALE_DIR', join_paths(prefix, datadir, 'locale'))
-cdata.set_quoted('PACKAGE_NAME', 'Xfce4 Taskmanager')
-cdata.set_quoted('PACKAGE_STRING', 'Xfce4 Taskmanager ' + meson.project_version())
-cdata.set_quoted('PACKAGE_TARNAME', meson.project_name())
-cdata.set_quoted('PACKAGE_URL', 'https://docs.xfce.org/apps/xfce4-taskmanager/start')
-cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
-cdata.set_quoted('VERSION', meson.project_version())
-
-if get_option('libwnck')
+if libwnck
     app_deps += dependency('libwnck-3.0')
     cdata.set('HAVE_WNCK', 1)
 endif
+cdata.set_quoted('PACKAGE_LOCALE_DIR', join_paths(prefix, datadir, 'locale'))
+cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 # check headers ---------------------------------------------------------------
 
 check_headers = [
-    'dlfcn.h',
-    'err.h',
-    'fcntl.h',
-    'inttypes.h',
-    'kstat.h',
-    'kvm.h',
-    'locale.h',
-    'memory.h',
-    'paths.h',
-    'procfs.h',
-    'pwd.h',
-    'signal.h',
-    'stdint.h',
-    'stdio.h',
     'stdlib.h',
-    'strings.h',
     'string.h',
-    'sys/param.h',
-    'sys/procfs.h',
-    'sys/proc.h',
-    'sys/resource.h',
-    'sys/sched.h',
-    'sys/stat.h',
-    'sys/swap.h',
-    'sys/sysctl.h',
-    'sys/types.h',
-    'sys/user.h',
     'unistd.h',
 ]
 
 foreach h : check_headers
     if cc.has_header(h)
         cdata.set('HAVE_' + h.underscorify().to_upper(), 1)
-    endif
-endforeach
-
-# check symbol ----------------------------------------------------------------
-
-check_symbol = [
-    ['HAVE_LC_MESSAGES', 'locale.h', 'LC_MESSAGES'],
-]
-
-foreach s : check_symbol
-    if cc.has_header_symbol(s.get(1), s.get(2))
-        cdata.set(s.get(0), 1)
-    endif
-endforeach
-
-# check functions -------------------------------------------------------------
-
-# check token ['HAVE_CFLOCALECOPYCURRENT']
-# check token ['HAVE_CFPREFERENCESCOPYAPPVALUE']
-# check token ['HAVE_LIBKSTAT']
-# check token ['HAVE_LIBKVM']
-# check token ['HAVE_LIBX11']
-
-check_functions = [
-    ['HAVE_BIND_TEXTDOMAIN_CODESET', 'bind_textdomain_codeset', '#include<libintl.h>'],
-    ['HAVE_DCGETTEXT', 'dcgettext', '#include<libintl.h>'],
-    ['HAVE_GETTEXT', 'gettext', '#include<libintl.h>'],
-]
-
-foreach f : check_functions
-    if cc.has_function(f.get(1), prefix : f.get(2))
-        cdata.set(f.get(0), 1)
     endif
 endforeach
 
