@@ -28,7 +28,7 @@ if [[ $NOCLEAN == 0 && -d $dest ]]; then
     rm -rf $dest
 fi
 
-meson build -Dbuildtype=${BUILDTYPE} -Dlibwnck=true
+meson setup build -Dbuildtype=${BUILDTYPE} -Dlibwnck=true
 diff -rup ./other/config.h ./build/config.h >./other/config.diff
 ninja -C build
 sudo ninja -C build install
