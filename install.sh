@@ -1,36 +1,31 @@
 #!/usr/bin/bash
 
-BASEDIR="$(dirname -- "$(readlink -f -- "$0";)")"
+basedir="$(dirname -- "$(readlink -f -- "$0";)")"
+opt_clean=0
+buildtype="plain"
 
-NOCLEAN=0
-BUILDTYPE="plain"
-
-while [[ $# > 0 ]]; do
-    key="$1"
-    echo "$1"
-    case $key in
-        noclean)
-        NOCLEAN=1
-        shift
+while (($#)); do
+    case "$1" in
+        clean)
+        opt_clean=1
         ;;
-        debug)
-        BUILDTYPE="debug"
-        shift
+        -type)
+        buildtype="debug"
         ;;
         *)
-        shift
         ;;
     esac
+    shift
 done
 
-dest=$BASEDIR/build
-if [[ $NOCLEAN == 0 && -d $dest ]]; then
+dest=$basedir/build
+if [[ $opt_clean == 1 && -d $dest ]]; then
     rm -rf $dest
 fi
 
-meson setup build -Dbuildtype=${BUILDTYPE} -Dlibwnck=true
-diff -rup ./other/config.h ./build/config.h >./other/config.diff
+meson setup build -Dbuildtype=${buildtype} -Dlibwnck=false
+#diff -rup ./other/config.h ./build/config.h >./other/config.diff
 ninja -C build
-sudo ninja -C build install
+sudo meson install -C build
 
 
